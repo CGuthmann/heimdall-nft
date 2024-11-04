@@ -20,6 +20,10 @@ const TRUST_DEPTH: u32 = 10;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct NFTCredential<H: HashFunction, S: SignatureFunction> {
+    #[serde(bound(
+        serialize = "Credential<H,S>: Serialize",
+        deserialize = "Credential<H,S>: Deserialize<'de>"
+    ))]
     pub credential: Credential<H, S>,
     pub nft: ShieldedFractionalNFT,
 }
@@ -64,7 +68,7 @@ impl NFTCredential<PoseidonHasher, PoseidonSignature> {
 
         Ok(NFTCredential { credential, nft })
     }
-    fn transfer_split(
+    pub fn transfer_split(
         &self,
         private_key: &BigInt,
         fraction: [BigInt; 2],
@@ -78,7 +82,7 @@ impl NFTCredential<PoseidonHasher, PoseidonSignature> {
     }
 
     
-    fn burn(
+    pub fn burn(
         &mut self,
         private_key: &BigInt,
         ledger_authority: &mut dyn LedgerAuthority<PoseidonHasher,2>,
