@@ -1,6 +1,3 @@
-extern crate num_bigint;
-extern crate rand;
-
 use std::str::FromStr;
 
 use crypto::{
@@ -63,6 +60,7 @@ impl NFTCredential<PoseidonHasher, PoseidonSignature> {
             ledger_authority,
             trust_list_proof,
             sk_issuer,
+            false
         )?;
         dbg!("Cnft erstellt");
 
@@ -81,6 +79,32 @@ impl NFTCredential<PoseidonHasher, PoseidonSignature> {
         Ok((NFTCredential{credential: self.credential.clone(),nft: nft_split_a}, NFTCredential{credential: self.credential.clone(),nft: nft_split_b}))
     }
 
+    pub fn attach(
+        &self,
+        private_key: &BigInt,
+        target: &NFTCredential<PoseidonHasher,PoseidonSignature>,
+        ledger_authority: &mut dyn LedgerAuthority<PoseidonHasher,2>,
+    )-> Result<Self, Box<dyn std::error::Error>> {
+        dbg!(&private_key);
+        dbg!(&self.nft);
+        let nft = self.nft.transfer_to_nft(private_key, &target.nft, ledger_authority)?;
+        Ok(NFTCredential { credential: self.credential.clone(), nft })
+    }
+
+    
+    pub fn detach(
+        &self,
+        private_key_root: &BigInt,
+        target: &BigInt,
+        path_nft_credentials: Vec<&NFTCredential<PoseidonHasher,PoseidonSignature>>,
+        ledger_authority: &mut dyn LedgerAuthority<PoseidonHasher,2>,
+    )-> Result<Self, Box<dyn std::error::Error>> {
+
+        let path_nfts: Vec<&ShieldedFractionalNFT> = path_nft_credentials.into_iter().map(|x| &x.nft).collect();
+        let nft = self.nft.transfer_from_nft(private_key_root, target, false, 
+            &path_nfts, ledger_authority)?;
+        Ok(NFTCredential { credential: self.credential.clone(), nft })
+    }
     
     pub fn burn(
         &mut self,
@@ -188,6 +212,14 @@ mod tests {
             .expect("transfer default case");
 
 
+        //child operations
+        println!("Testing attachment");
+        let nft_child = nft_a.attach(&owner_a_priv, &nft_b, &mut ledger_authority)
+                                                            .expect("attach");
+
+        println!("Testing detach");
+        let nft_own = nft_child.detach(&owner_b_priv, &owner_a_pub, vec![&nft_b], &mut ledger_authority)
+                                                                    .expect("detach");
     
         //
         // burn
