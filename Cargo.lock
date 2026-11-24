@@ -1824,7 +1824,7 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 [[package]]
 name = "ledger_authority"
 version = "0.1.0"
-source = "git+ssh://git@gitlab.cc-asp.fraunhofer.de/blockchainlab/sfnfts.git?branch=feature%2Fchild_nft#49aa5d1c840b929a9db6713bd91add041da98597"
+source = "git+https://github.com/CGuthmann/sfnfts.git?branch=feature%2Fchild_nft#49aa5d1c840b929a9db6713bd91add041da98597"
 dependencies = [
  "ark-circom-service",
  "crypto",
@@ -1992,7 +1992,7 @@ dependencies = [
 [[package]]
 name = "nft"
 version = "0.1.0"
-source = "git+ssh://git@gitlab.cc-asp.fraunhofer.de/blockchainlab/sfnfts.git?branch=feature%2Fchild_nft#49aa5d1c840b929a9db6713bd91add041da98597"
+source = "git+https://github.com/CGuthmann/sfnfts.git?branch=feature%2Fchild_nft#49aa5d1c840b929a9db6713bd91add041da98597"
 dependencies = [
  "ark-circom-service",
  "crypto",
